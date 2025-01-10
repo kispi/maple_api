@@ -10,9 +10,9 @@ export type CharacterPropensity = {
   charm_level: number
 }
 
-export const propensity = async (ocid: string) => {
+export const propensity = async ({ ocid, date }: { ocid: string, date?: string }) => {
   try {
-    return await client().get('character/propensity', { params: { ocid } }) as CharacterPropensity
+    return await client().get('character/propensity', { params: { ocid, date } }) as CharacterPropensity
   } catch (e) {
     return Promise.reject(e)
   }

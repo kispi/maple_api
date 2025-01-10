@@ -76,9 +76,9 @@ type CharacterAndroidEquipment = AndroidInfo & {
   android_preset_3: AndroidInfo
 }
 
-export const androidEquipment = async (ocid: string) => {
+export const androidEquipment = async ({ ocid, date }: { ocid: string, date?: string }) => {
   try {
-    return await client().get('character/android-equipment', { params: { ocid } }) as CharacterAndroidEquipment
+    return await client().get('character/android-equipment', { params: { ocid, date } }) as CharacterAndroidEquipment
   } catch (e) {
     return Promise.reject(e)
   }

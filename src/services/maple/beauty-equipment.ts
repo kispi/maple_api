@@ -44,9 +44,9 @@ export type CharacterBeautyEquipment = {
   }
 }
 
-export const beautyEquipment = async (ocid: string) => {
+export const beautyEquipment = async ({ ocid, date }: { ocid: string, date?: string }) => {
   try {
-    return await client().get('character/beauty-equipment', { params: { ocid } }) as CharacterBeautyEquipment
+    return await client().get('character/beauty-equipment', { params: { ocid, date } }) as CharacterBeautyEquipment
   } catch (e) {
     return Promise.reject(e)
   }

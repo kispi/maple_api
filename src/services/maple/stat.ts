@@ -10,9 +10,9 @@ export type CharacterStat = {
   remain_ap: number
 }
 
-export const stat = async (ocid: string) => {
+export const stat = async ({ ocid, date }: { ocid: string, date?: string }) => {
   try {
-    return await client().get('character/stat', { params: { ocid } }) as CharacterStat
+    return await client().get('character/stat', { params: { ocid, date } }) as CharacterStat
   } catch (e) {
     return Promise.reject(e)
   }

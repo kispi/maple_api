@@ -9,9 +9,9 @@ export type CharacterDojang = {
   dojang_best_time: number
 }
 
-export const dojang = async (ocid: string) => {
+export const dojang = async ({ ocid, date }: { ocid: string, date?: string }) => {
   try {
-    return await client().get('character/dojang', { params: { ocid } }) as CharacterDojang
+    return await client().get('character/dojang', { params: { ocid, date } }) as CharacterDojang
   } catch (e) {
     return Promise.reject(e)
   }

@@ -28,9 +28,9 @@ export type CharacterHyperStat = {
   hyper_stat_preset_3_remain_point: number
 }
 
-export const hyperStat = async (ocid: string) => {
+export const hyperStat = async ({ ocid, date }: { ocid: string, date?: string }) => {
   try {
-    return await client().get('character/hyper-stat', { params: { ocid } }) as CharacterHyperStat
+    return await client().get('character/hyper-stat', { params: { ocid, date } }) as CharacterHyperStat
   } catch (e) {
     return Promise.reject(e)
   }

@@ -17,9 +17,9 @@ export type CharacterBasic = {
   liberation_quest_clear_flag: string
 }
 
-export const basic = async (ocid: string) => {
+export const basic = async ({ ocid, date }: { ocid: string, date?: string }) => {
   try {
-    return await client().get('character/basic', { params: { ocid } }) as CharacterBasic
+    return await client().get('character/basic', { params: { ocid, date } }) as CharacterBasic
   } catch (e) {
     return Promise.reject(e)
   }

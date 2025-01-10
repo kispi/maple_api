@@ -22,9 +22,9 @@ export type CharacterSymbolEquipment = {
   }]
 }
 
-export const symbolEquipment = async (ocid: string) => {
+export const symbolEquipment = async ({ ocid, date }: { ocid: string, date?: string }) => {
   try {
-    return await client().get('character/symbol-equipment', { params: { ocid } }) as CharacterSymbolEquipment
+    return await client().get('character/symbol-equipment', { params: { ocid, date } }) as CharacterSymbolEquipment
   } catch (e) {
     return Promise.reject(e)
   }

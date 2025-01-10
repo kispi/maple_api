@@ -16,9 +16,9 @@ export type CharacterSetEffect = {
   }]
 }
 
-export const setEffect = async (ocid: string) => {
+export const setEffect = async ({ ocid, date }: { ocid: string, date?: string }) => {
   try {
-    return await client().get('character/set-effect', { params: { ocid } }) as CharacterSetEffect
+    return await client().get('character/set-effect', { params: { ocid, date } }) as CharacterSetEffect
   } catch (e) {
     return Promise.reject(e)
   }

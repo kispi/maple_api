@@ -60,9 +60,9 @@ export type CharacterPetEquipment = {
   pet_3_appearance_icon: string
 }
 
-export const petEquipment = async (ocid: string) => {
+export const petEquipment = async ({ ocid, date }: { ocid: string, date?: string }) => {
   try {
-    return await client().get('character/pet-equipment', { params: { ocid } }) as CharacterPetEquipment
+    return await client().get('character/pet-equipment', { params: { ocid, date } }) as CharacterPetEquipment
   } catch (e) {
     return Promise.reject(e)
   }

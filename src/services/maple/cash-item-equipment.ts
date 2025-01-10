@@ -38,9 +38,9 @@ export type CharacterCashItemEquipment = {
   additional_cash_item_equipment_preset_3: CashItemEquipment[]
 }
 
-export const cashItemEquipment = async (ocid: string) => {
+export const cashItemEquipment = async ({ ocid, date }: { ocid: string, date?: string }) => {
   try {
-    return await client().get('character/cashitem-equipment', { params: { ocid } }) as CharacterCashItemEquipment
+    return await client().get('character/cashitem-equipment', { params: { ocid, date } }) as CharacterCashItemEquipment
   } catch (e) {
     return Promise.reject(e)
   }
