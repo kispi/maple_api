@@ -3,12 +3,13 @@ import { useRoutes } from './routes'
 import Fastify from 'fastify'
 import store from './store'
 
-import { useEnv, useHooks } from './server-modules'
+import { useCors, useEnv, useHooks } from './server-modules'
 
 const start = async () => {
   useEnv()
 
   const app = Fastify()
+  useCors(app)
   useHooks(app)
   useRoutes(app)
 
