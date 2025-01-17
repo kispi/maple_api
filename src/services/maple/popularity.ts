@@ -1,9 +1,5 @@
+import { CharacterPopularity } from '../../types/popularity'
 import { client } from './__common'
-
-export type CharacterPopularity = {
-  date: string
-  character_popularity: number
-}
 
 export const popularity = async ({ ocid, date }: { ocid: string, date?: string }) => {
   try {
