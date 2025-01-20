@@ -6,4 +6,7 @@ export const useRoutes = (app: FastifyInstance) => {
   app.get('/maple/ping', () => {
     return { status: 'pong' }
   })
+  app.get('/config', () => {
+    return { ver: '1.0.0' }
+  })
 }
