@@ -7,7 +7,7 @@ export type PetEquipment = {
     option_value: string
   }]
   scroll_upgrade: number
-  scroll_upgradable: number
+  scroll_upgradeable: number
   item_shape: string
   item_shape_icon: string
 }

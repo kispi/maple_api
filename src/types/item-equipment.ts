@@ -91,7 +91,7 @@ export type ItemEquipment = {
   cuttable_count: string
   golden_hammer_flag: string
   scroll_resilience_count: string
-  scroll_upgradable_count: string
+  scroll_upgradeable_count: string
   soul_name: string
   soul_option: string
   item_etc_option: {
