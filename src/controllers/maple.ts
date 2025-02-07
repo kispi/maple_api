@@ -13,7 +13,6 @@ import {
   popularity,
   propensity,
   setEffect,
-  skill,
   stat,
   symbolEquipment,
 } from '../services/maple/character'
@@ -59,7 +58,6 @@ const getInfo = async (
       hyperStat({ ocid }),
       hexaMatrix({ ocid }),
       hexaMatrixStat({ ocid }),
-      skill({ ocid }),
     ])
     const result = {
       basic: resp[0],
@@ -79,7 +77,6 @@ const getInfo = async (
       hyperStat: resp[14],
       hexaMatrix: resp[15],
       hexaMatrixStat: resp[16],
-      skill: resp[17],
     }
     cache.set(`maple_ocid:${characterName}`, result, 60)
     log.info(`mapleController.getInfo: cached ${characterName} (${ocid}) for 60 seconds`)

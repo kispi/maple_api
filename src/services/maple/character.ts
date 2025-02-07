@@ -128,9 +128,9 @@ export const setEffect = async ({ ocid, date }: { ocid: string, date?: string })
   }
 }
 
-export const skill = async ({ ocid, date }: { ocid: string, date?: string }) => {
+export const skill = async ({ ocid, date, character_skill_grade }: { ocid: string, date?: string, character_skill_grade: string }) => {
   try {
-    return await client().get('character/skill', { params: { ocid, date } }) as CharacterSkill
+    return await client().get('character/skill', { params: { ocid, date, character_skill_grade } }) as CharacterSkill
   } catch (e) {
     return Promise.reject(e)
   }
