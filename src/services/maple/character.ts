@@ -11,6 +11,7 @@ import { CharacterPetEquipment } from '../../types/pet-equipment'
 import { CharacterPopularity } from '../../types/popularity'
 import { CharacterPropensity } from '../../types/propensity'
 import { CharacterSetEffect } from '../../types/set-effect'
+import { CharacterSkill } from '../../types/skill'
 import { CharacterStat } from '../../types/stat'
 import { CharacterSymbolEquipment } from '../../types/symbol-equipment'
 import { client } from './__common'
@@ -122,6 +123,14 @@ export const propensity = async ({ ocid, date }: { ocid: string, date?: string }
 export const setEffect = async ({ ocid, date }: { ocid: string, date?: string }) => {
   try {
     return await client().get('character/set-effect', { params: { ocid, date } }) as CharacterSetEffect
+  } catch (e) {
+    return Promise.reject(e)
+  }
+}
+
+export const skill = async ({ ocid, date }: { ocid: string, date?: string }) => {
+  try {
+    return await client().get('character/skill', { params: { ocid, date } }) as CharacterSkill
   } catch (e) {
     return Promise.reject(e)
   }
