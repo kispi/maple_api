@@ -9,6 +9,7 @@ import {
   hexaMatrixStat,
   hyperStat,
   itemEquipment,
+  linkSkill,
   petEquipment,
   popularity,
   propensity,
@@ -38,46 +39,31 @@ const getInfo = async (
     return
   }
 
+  const foos = {
+    basic,
+    popularity,
+    stat,
+    hyperStat,
+    propensity,
+    itemEquipment,
+    cashItemEquipment,
+    symbolEquipment,
+    setEffect,
+    beautyEquipment,
+    androidEquipment,
+    petEquipment,
+    linkSkill,
+    hexaMatrix,
+    hexaMatrixStat,
+    dojang,
+    union,
+    unionRaider,
+  }
+
   try {
     const ocid = await getOCID(characterName)
-    const resp = await Promise.all([
-      basic({ ocid }),
-      itemEquipment({ ocid }),
-      androidEquipment({ ocid }),
-      beautyEquipment({ ocid }),
-      cashItemEquipment({ ocid }),
-      petEquipment({ ocid }),
-      symbolEquipment({ ocid }),
-      dojang({ ocid }),
-      propensity({ ocid }),
-      popularity({ ocid }),
-      setEffect({ ocid }),
-      union({ ocid }),
-      unionRaider({ ocid }),
-      stat({ ocid }),
-      hyperStat({ ocid }),
-      hexaMatrix({ ocid }),
-      hexaMatrixStat({ ocid }),
-    ])
-    const result = {
-      basic: resp[0],
-      itemEquipment: resp[1],
-      androidEquipment: resp[2],
-      beautyEquipment: resp[3],
-      cashItemEquipment: resp[4],
-      petEquipment: resp[5],
-      symbolEquipment: resp[6],
-      dojang: resp[7],
-      propensity: resp[8],
-      popularity: resp[9],
-      setEffect: resp[10],
-      union: resp[11],
-      unionRaider: resp[12],
-      stat: resp[13],
-      hyperStat: resp[14],
-      hexaMatrix: resp[15],
-      hexaMatrixStat: resp[16],
-    }
+    const entries = await Promise.all(Object.entries(foos).map(async ([key, foo]) => [key, await foo({ ocid })]))
+    const result = Object.fromEntries(entries)
     cache.set(`maple_ocid:${characterName}`, result, 60)
     log.info(`mapleController.getInfo: cached ${characterName} (${ocid}) for 60 seconds`)
     reply.send(result)

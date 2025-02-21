@@ -7,6 +7,7 @@ import { CharacterDojang } from '../../types/dojang'
 import { CharacterHyperStat } from '../../types/hyper-stat'
 import { CharacterHexaMatrix, CharacterHexaMatrixStat } from '../../types/hexa-stat'
 import { CharacterItemEquipment } from '../../types/item-equipment'
+import { CharacterLinkSkill } from '../../types/link-skill'
 import { CharacterPetEquipment } from '../../types/pet-equipment'
 import { CharacterPopularity } from '../../types/popularity'
 import { CharacterPropensity } from '../../types/propensity'
@@ -96,6 +97,14 @@ export const itemEquipment = async ({ ocid, date }: { ocid: string, date?: strin
   }
 }
 
+export const linkSkill = async ({ ocid, date }: { ocid: string, date?: string }) => {
+  try {
+    return await client().get('character/link-skill', { params: { ocid, date } }) as CharacterLinkSkill
+  } catch (e) {
+    return Promise.reject(e)
+  }
+}
+
 export const petEquipment = async ({ ocid, date }: { ocid: string, date?: string }) => {
   try {
     return await client().get('character/pet-equipment', { params: { ocid, date } }) as CharacterPetEquipment
@@ -128,7 +137,15 @@ export const setEffect = async ({ ocid, date }: { ocid: string, date?: string })
   }
 }
 
-export const skill = async ({ ocid, date, character_skill_grade }: { ocid: string, date?: string, character_skill_grade: string }) => {
+export const skill = async ({
+  ocid,
+  date,
+  character_skill_grade,
+}: {
+  ocid: string,
+  date?: string,
+  character_skill_grade: string, // 0, 1, 1.5, 2, 2.5, 3, 4, hyperpassive, hyperactive, 5, 6
+}) => {
   try {
     return await client().get('character/skill', { params: { ocid, date, character_skill_grade } }) as CharacterSkill
   } catch (e) {

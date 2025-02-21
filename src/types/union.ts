@@ -57,3 +57,36 @@ export type UnionRaider = {
   union_raider_preset_4: UnionRaiderPreset
   union_raider_preset_5: UnionRaiderPreset
 }
+
+export type UnionArtifact = {
+  date: string
+  union_artifact_effect: {
+    name: string
+    level: number
+  }[]
+  union_artifact_crystal: {
+    name: string
+    validity_flag: string
+    date_expire: string
+    level: number
+    crystal_option_name_1: string
+    crystal_option_name_2: string
+    crystal_option_name_3: string
+  }[]
+  union_artifact_remain_ap: number
+}
+
+export type UnionChampion = {
+  date: string
+  union_chamipion: {
+    champion_slot: number
+    champion_grade: string
+    champion_class: string
+    champion_badge_info: {
+      stat: string
+    }[]
+  }[]
+  champion_badge_total_info: {
+    stat: string
+  }[]
+}
