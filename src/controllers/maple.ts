@@ -1,6 +1,7 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
 import {
   androidEquipment,
+  ability,
   basic,
   beautyEquipment,
   cashItemEquipment,
@@ -14,6 +15,7 @@ import {
   popularity,
   propensity,
   setEffect,
+  skill,
   stat,
   symbolEquipment,
 } from '../services/maple/character'
@@ -40,6 +42,7 @@ const getInfo = async (
   }
 
   const foos = {
+    ability,
     basic,
     popularity,
     stat,
@@ -64,6 +67,14 @@ const getInfo = async (
     const ocid = await getOCID(characterName)
     const entries = await Promise.all(Object.entries(foos).map(async ([key, foo]) => [key, await foo({ ocid })]))
     const result = Object.fromEntries(entries)
+    
+    // 스킬은 호출 오버로드가 달라서 따로 처리
+    const skillsResp = await Promise.all([
+      skill({ ocid, character_skill_grade: '0'}),
+      skill({ ocid, character_skill_grade: '6'}),
+    ])
+    result.skills = [skillsResp[0], skillsResp[1]]
+
     cache.set(`maple_ocid:${characterName}`, result, 60)
     log.info(`mapleController.getInfo: cached ${characterName} (${ocid}) for 60 seconds`)
     reply.send(result)
