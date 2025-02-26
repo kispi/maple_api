@@ -28,7 +28,8 @@ export const getOCID = async (name: string) => {
     return ocid
   } catch (e) {
     return Promise.reject({
-      message: 'Character not found',
+      code: '0001',
+      message: 'CHARACTER_NOT_FOUND',
     })
   }
 }
