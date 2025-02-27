@@ -19,7 +19,7 @@ import {
   stat,
   symbolEquipment,
 } from '../services/maple/character'
-import { union, unionRaider } from '../services/maple/user'
+import { union, unionRaider, unionArtifact, unionChampion } from '../services/maple/user'
 import { getOCID } from '../services/maple/__common'
 import { log } from '../core/logger'
 import useCache from '../core/cache'
@@ -30,16 +30,13 @@ const getInfo = async (
 ) => {
   const characterName = req.query['character_name']
   if (!characterName) {
-    reply.status(400).send({ error: `Missing query param: 'character_name'` })
-    return
+    reply.status(400)
+    return { error: `Missing query param: 'character_name'` }
   }
 
   const cache = useCache()
   const cached = await cache.get(`maple_ocid:${characterName}`)
-  if (cached) {
-    reply.send(cached)
-    return
-  }
+  if (cached) return cached
 
   const foos = {
     ability,
@@ -61,6 +58,8 @@ const getInfo = async (
     dojang,
     union,
     unionRaider,
+    unionArtifact,
+    unionChampion,
   }
 
   try {
@@ -77,9 +76,10 @@ const getInfo = async (
 
     cache.set(`maple_ocid:${characterName}`, result, 60)
     log.info(`mapleController.getInfo: cached ${characterName} (${ocid}) for 60 seconds`)
-    reply.send(result)
+    return result
   } catch (e) {
-    reply.status(400).send(e)
+    reply.status(400)
+    return e
   }
 }
 

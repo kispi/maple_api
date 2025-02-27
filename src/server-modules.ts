@@ -1,5 +1,6 @@
 import { createHttpLog, log } from './core/logger'
 import { FastifyInstance } from 'fastify'
+import fastifyCompress from '@fastify/compress'
 import fastifyCors from '@fastify/cors'
 import dotenv from 'dotenv'
 import store from './store'
@@ -10,6 +11,13 @@ export const useEnv = () => {
   if (env.API_PORT) store.state.serverConfig.API_PORT = env.API_PORT
   if (env.API_KEY_NEXON) store.state.serverConfig.API_KEY_NEXON = env.API_KEY_NEXON
   if (env.USE_REDIS) store.state.serverConfig.USE_REDIS = env.USE_REDIS
+}
+
+export const useCompression = async (app: FastifyInstance) => {
+  await app.register(fastifyCompress, {
+    encodings: ['gzip', 'deflate'],
+    threshold: 0,
+  })
 }
 
 export const useCors = (app: FastifyInstance) => {
