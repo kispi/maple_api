@@ -16,7 +16,6 @@ export const useEnv = () => {
 export const useCompression = async (app: FastifyInstance) => {
   await app.register(fastifyCompress, {
     encodings: ['gzip', 'deflate'],
-    threshold: 0,
   })
 }
 
