@@ -20,9 +20,11 @@ import {
   symbolEquipment,
 } from '../services/maple/character'
 import { union, unionRaider, unionArtifact, unionChampion } from '../services/maple/user'
+import { rankingOverall, rankingUnion } from '../services/maple/ranking'
 import { getOCID } from '../services/maple/__common'
 import { log } from '../core/logger'
 import useCache from '../core/cache'
+import helpers from '../core/helpers'
 
 const getInfo = async (
   req: FastifyRequest<{ Querystring: { character_name: string } }>,
@@ -73,6 +75,25 @@ const getInfo = async (
       skill({ ocid, character_skill_grade: '6'}),
     ])
     result.skills = [skillsResp[0], skillsResp[1]]
+
+    const date = helpers.dayjs().format('YYYY-MM-DD')
+    const rankingResp = await Promise.all([
+      rankingOverall({ ocid, date }),
+      rankingOverall({ ocid, date, world_name: result.basic.world_name }),
+      rankingOverall({ ocid, date, class_name: result.basic.character_class }),
+      rankingOverall({ ocid, date, class_name: result.basic.character_class, world_name: result.basic.world_name }),
+      rankingUnion({ ocid, date }),
+      rankingUnion({ ocid, date, world_name: result.basic.world_name }),
+    ])
+
+    result.ranking = {
+      overall: rankingResp[0]?.ranking[0],
+      overall_world: rankingResp[1]?.ranking[0],
+      class: rankingResp[2]?.ranking[0],
+      class_world: rankingResp[3]?.ranking[0],
+      union: rankingResp[4]?.ranking[0],
+      union_world: rankingResp[5]?.ranking[0],
+    }
 
     cache.set(`maple_ocid:${characterName}`, result, 60)
     log.info(`mapleController.getInfo: cached ${characterName} (${ocid}) for 60 seconds`)
