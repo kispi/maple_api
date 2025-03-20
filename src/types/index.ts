@@ -1,6 +1,6 @@
 export type DefaultError = {
-  code: string
   data: {
+    code: string
     message: string
   }
 }

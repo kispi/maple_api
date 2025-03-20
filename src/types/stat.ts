@@ -3,7 +3,7 @@ export type CharacterStat = {
   character_class: string
   final_stat: [{
     stat_name: string
-    stat_value: number
+    stat_value: string
   }]
   remain_ap: number
 }
