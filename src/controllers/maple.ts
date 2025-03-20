@@ -19,12 +19,14 @@ import {
   stat,
   symbolEquipment,
 } from '../services/maple/character'
+import { definedErrors } from '../assets/constants'
 import { union, unionRaider, unionArtifact, unionChampion } from '../services/maple/user'
 import { rankingOverall, rankingUnion } from '../services/maple/ranking'
 import { getOCID } from '../services/maple/__common'
 import { log } from '../core/logger'
 import useCache from '../core/cache'
 import helpers from '../core/helpers'
+import store from '../store'
 
 const getInfo = async (
   req: FastifyRequest<{ Querystring: { character_name: string } }>,
@@ -100,6 +102,8 @@ const getInfo = async (
     return result
   } catch (e) {
     reply.status(400)
+    if (store.state.isMaintaining) return definedErrors.find(err => err.message === 'SERVER_MAINTENANCE')
+
     return e
   }
 }

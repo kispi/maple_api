@@ -1,5 +1,6 @@
 export default {
   state: {
+    isMaintaining: false,
     serverConfig: {
       API_PORT: '4500',
       API_KEY_NEXON: '',

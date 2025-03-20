@@ -1,3 +1,11 @@
+export const definedErrors = [{
+  code: '0001',
+  message: 'CHARACTER_NOT_FOUND'
+}, {
+  code: '0002',
+  message: 'SERVER_MAINTENANCE',
+}]
+
 export const classes = [
   '초보자-전체 전직',
   '전사-전체 전직',
