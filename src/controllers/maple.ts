@@ -24,6 +24,7 @@ import { union, unionRaider, unionArtifact, unionChampion } from '../services/ma
 import { rankingOverall, rankingUnion } from '../services/maple/ranking'
 import { getOCID } from '../services/maple/__common'
 import { log } from '../core/logger'
+import { db, SearchHistory } from '../core/database'
 import useCache from '../core/cache'
 import helpers from '../core/helpers'
 import store from '../store'
@@ -99,6 +100,13 @@ const getInfo = async (
 
     cache.set(`maple_ocid:${characterName}`, result, 60)
     log.info(`mapleController.getInfo: cached ${characterName} (${ocid}) for 60 seconds`)
+
+    // 어차피 실패해도 상관 없어서 then catch 생략
+    db<SearchHistory>('search_histories').insert({
+      ocid,
+      character_name: characterName,
+      raw_json: JSON.stringify(result),
+    })
     return result
   } catch (e) {
     reply.status(400)

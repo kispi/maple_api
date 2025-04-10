@@ -6,6 +6,10 @@ export default {
       API_KEY_NEXON: '',
       AWS_S3_CDN: '',
       USE_REDIS: 'no',
+      DB_HOST: '',
+      DB_PORT: '',
+      DB_USER: '',
+      DB_PASSWORD: '',
     },
   },
 }

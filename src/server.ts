@@ -1,12 +1,13 @@
 import { log } from './core/logger'
 import { useRoutes } from './routes'
 import { useCompression, useCors, useEnv, useHooks } from './server-modules'
+import { useDatabase } from './core/database'
 import Fastify from 'fastify'
 import store from './store'
 
-
 const start = async () => {
   useEnv()
+  useDatabase()
 
   const app = Fastify()
   await useCompression(app)

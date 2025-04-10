@@ -11,6 +11,12 @@ export const useEnv = () => {
   if (env.API_PORT) store.state.serverConfig.API_PORT = env.API_PORT
   if (env.API_KEY_NEXON) store.state.serverConfig.API_KEY_NEXON = env.API_KEY_NEXON
   if (env.USE_REDIS) store.state.serverConfig.USE_REDIS = env.USE_REDIS
+
+  // DATABASE
+  if (env.DB_HOST) store.state.serverConfig.DB_HOST = env.DB_HOST
+  if (env.DB_PORT) store.state.serverConfig.DB_PORT = env.DB_PORT
+  if (env.DB_USER) store.state.serverConfig.DB_USER = env.DB_USER
+  if (env.DB_PASSWORD) store.state.serverConfig.DB_PASSWORD = env.DB_PASSWORD
 }
 
 export const useCompression = async (app: FastifyInstance) => {
