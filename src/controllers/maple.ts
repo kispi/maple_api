@@ -104,7 +104,7 @@ const getInfo = async (
     saveSearchHistory({
       ocid,
       character_name: characterName,
-      ip: req.ip,
+      ip: helpers.realIP(req),
       result,
     })
     return result

@@ -1,3 +1,4 @@
+import { FastifyRequest } from 'fastify'
 import dayjs from 'dayjs'
 import axios from 'axios'
 import store from '../../store'
@@ -26,6 +27,7 @@ const helpers = {
     toSnake: (str: string, delim?: string) => (str || '').replace(/[A-Z]/g, letter => `${delim || '_'}${letter.toLowerCase()}`),
     toCamel: (str: string) => str.replace(/([-_][a-z])/g, group => group.toUpperCase().replace('-', '').replace('_', '')),
   },
+  realIP: (req: FastifyRequest) => (req.headers['ssr-proxy-from'] || req.headers['x-forwarded-for'] ||  req.socket.remoteAddress) as string,
   imageUrlToBlob: async (imageUrl: string) => {
     try {
       return await axios.get(imageUrl, {
