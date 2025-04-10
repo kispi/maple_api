@@ -29,6 +29,26 @@ import useCache from '../core/cache'
 import helpers from '../core/helpers'
 import store from '../store'
 
+const save = async ({
+  ocid,
+  character_name,
+  result,
+}: {
+  ocid: string,
+  character_name: string,
+  result: any,
+}) => {
+  try {
+    await db<SearchHistory>('search_histories').insert({
+      ocid,
+      character_name,
+      raw_json: JSON.stringify(result),
+    })
+  } catch (e) {
+    log.error(`Failed to save search history: ${e}`)
+  }
+}
+
 const getInfo = async (
   req: FastifyRequest<{ Querystring: { character_name: string } }>,
   reply: FastifyReply,
@@ -101,12 +121,7 @@ const getInfo = async (
     cache.set(`maple_ocid:${characterName}`, result, 60)
     log.info(`mapleController.getInfo: cached ${characterName} (${ocid}) for 60 seconds`)
 
-    // 어차피 실패해도 상관 없어서 then catch 생략
-    db<SearchHistory>('search_histories').insert({
-      ocid,
-      character_name: characterName,
-      raw_json: JSON.stringify(result),
-    })
+    save({ ocid, character_name: characterName, result })
     return result
   } catch (e) {
     reply.status(400)
