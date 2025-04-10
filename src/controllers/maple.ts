@@ -24,30 +24,10 @@ import { union, unionRaider, unionArtifact, unionChampion } from '../services/ma
 import { rankingOverall, rankingUnion } from '../services/maple/ranking'
 import { getOCID } from '../services/maple/__common'
 import { log } from '../core/logger'
-import { db, SearchHistory } from '../core/database'
+import { saveSearchHistory } from '../core/database'
 import useCache from '../core/cache'
 import helpers from '../core/helpers'
 import store from '../store'
-
-const save = async ({
-  ocid,
-  character_name,
-  result,
-}: {
-  ocid: string,
-  character_name: string,
-  result: any,
-}) => {
-  try {
-    await db<SearchHistory>('search_histories').insert({
-      ocid,
-      character_name,
-      raw_json: JSON.stringify(result),
-    })
-  } catch (e) {
-    log.error(`Failed to save search history: ${e}`)
-  }
-}
 
 const getInfo = async (
   req: FastifyRequest<{ Querystring: { character_name: string } }>,
@@ -121,7 +101,7 @@ const getInfo = async (
     cache.set(`maple_ocid:${characterName}`, result, 60)
     log.info(`mapleController.getInfo: cached ${characterName} (${ocid}) for 60 seconds`)
 
-    save({ ocid, character_name: characterName, result })
+    saveSearchHistory({ ocid, character_name: characterName, result })
     return result
   } catch (e) {
     reply.status(400)
