@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS `search_histories` (
   `ocid` VARCHAR(255) NOT NULL,
   `character_name` VARCHAR(255) NOT NULL,
   `raw_json` LONGTEXT NOT NULL,
+  `ip` VARCHAR(255) NOT NULL,
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   INDEX `idx_ocid` (`ocid`)
@@ -31,6 +32,7 @@ export type SearchHistory = {
   ocid: string
   character_name: string
   raw_json: string
+  ip: string
   created_at: string
 }
 
@@ -38,10 +40,12 @@ export type SearchHistory = {
 export const saveSearchHistory = async ({
   ocid,
   character_name,
+  ip,
   result,
 }: {
   ocid: string,
   character_name: string,
+  ip: string,
   result: any,
 }) => {
   const raw_json = deflateSync(Buffer.from(JSON.stringify(result)), { level: 9 }).toString('base64')
@@ -49,6 +53,7 @@ export const saveSearchHistory = async ({
     await db<SearchHistory>('search_histories').insert({
       ocid,
       character_name,
+      ip,
       raw_json,
     })
   } catch (e) {

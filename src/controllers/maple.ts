@@ -101,7 +101,12 @@ const getInfo = async (
     cache.set(`maple_ocid:${characterName}`, result, 60)
     log.info(`mapleController.getInfo: cached ${characterName} (${ocid}) for 60 seconds`)
 
-    saveSearchHistory({ ocid, character_name: characterName, result })
+    saveSearchHistory({
+      ocid,
+      character_name: characterName,
+      ip: req.ip,
+      result,
+    })
     return result
   } catch (e) {
     reply.status(400)
