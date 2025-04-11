@@ -12,6 +12,9 @@ export const useEnv = () => {
   if (env.API_KEY_NEXON) store.state.serverConfig.API_KEY_NEXON = env.API_KEY_NEXON
   if (env.USE_REDIS) store.state.serverConfig.USE_REDIS = env.USE_REDIS
 
+  // Authorization
+  if (env.JWT_SECRET) store.state.serverConfig.JWT_SECRET = env.JWT_SECRET
+
   // DATABASE
   if (env.DB_HOST) store.state.serverConfig.DB_HOST = env.DB_HOST
   if (env.DB_PORT) store.state.serverConfig.DB_PORT = env.DB_PORT

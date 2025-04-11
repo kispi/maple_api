@@ -10,6 +10,8 @@ export default {
       DB_PORT: '',
       DB_USER: '',
       DB_PASSWORD: '',
+      JWT_SECRET: '',
+      MAX_SEARCH_HISTORY_LIMIT: 20,
     },
   },
 }

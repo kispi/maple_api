@@ -1,6 +1,4 @@
-export type DefaultError = {
-  data: {
-    code: string
-    message: string
-  }
+export type DefaultErrorData = {
+  code: string
+  message: string
 }

@@ -1,10 +1,19 @@
-export const definedErrors = [{
-  code: '0001',
-  message: 'CHARACTER_NOT_FOUND'
-}, {
-  code: '0002',
-  message: 'SERVER_MAINTENANCE',
-}]
+import { DefaultErrorData } from '../types'
+
+const definedErrors = {
+  '0001': 'CHARACTER_NOT_FOUND',
+  '0002': 'SERVER_MAINTENANCE',
+  '0003': 'EXCEEDS_MAXIMUM_SEARCH_COUNT',
+}
+
+export const useDefinedError = (code: keyof typeof definedErrors): DefaultErrorData => {
+  if (!definedErrors[code]) return { code, message: 'UNKNOWN_ERROR' }
+
+  return {
+    code,
+    message: definedErrors[code],
+  }
+}
 
 export const classes = [
   '초보자-전체 전직',

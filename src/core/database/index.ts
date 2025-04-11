@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS `search_histories` (
 */
 
 import { deflateSync, inflateSync } from 'zlib'
+import { useDefinedError } from '../../assets/constants'
 import { log } from '../logger'
 import knex from 'knex'
 import store from '../../store'
@@ -66,12 +67,29 @@ export const getSearchHistories = async ({
   id,
   ocid,
   character_name,
+  limit,
+  page,
+  orderBy = 'created_at',
+  order = 'desc',
+  raw,
 }: {
   id?: number,
   ocid?: string,
   character_name?: string,
+  limit?: number,
+  page?: number,
+  orderBy?: 'created_at' | 'id',
+  order?: 'asc' | 'desc',
+  raw?: boolean,
 }) => {
   const query = db<SearchHistory>('search_histories').select('*')
+
+  const defaults = {
+    limit: 10,
+    page: 1,
+  }
+
+  if (limit && (limit > store.state.serverConfig.MAX_SEARCH_HISTORY_LIMIT)) return Promise.reject(useDefinedError('0003'))
 
   if (id) {
     query.where('id', id)
@@ -81,10 +99,13 @@ export const getSearchHistories = async ({
     query.where('character_name', character_name)
   }
 
-  const rows = await query.orderBy('created_at', 'desc')
+  const rows = await query
+    .orderBy(orderBy, order)
+    .limit(limit || defaults.limit)
+    .offset(((page || defaults.page) - 1) * (limit || defaults.limit))
   return rows.map(({ raw_json, ...rest }) => ({
     ...rest,
-    raw_json: JSON.parse(
+    raw_json: raw ? raw_json : JSON.parse(
       inflateSync(Buffer.from(raw_json, 'base64')).toString()
     ),
   }))

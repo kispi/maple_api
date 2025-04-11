@@ -1,4 +1,4 @@
-import { definedErrors } from '../../assets/constants'
+import { useDefinedError } from '../../assets/constants'
 import axios, { Axios } from 'axios'
 import store from '../../store'
 
@@ -28,6 +28,6 @@ export const getOCID = async (name: string) => {
     }) as { ocid: string }
     return ocid
   } catch (e) {
-    return Promise.reject(definedErrors.find(err => err.message === 'CHARACTER_NOT_FOUND'))
+    return Promise.reject(useDefinedError('0001'))
   }
 }

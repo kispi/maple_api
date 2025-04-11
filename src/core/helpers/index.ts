@@ -2,9 +2,11 @@ import { FastifyRequest } from 'fastify'
 import dayjs from 'dayjs'
 import axios from 'axios'
 import store from '../../store'
+import jwt from './jwt'
 
 const helpers = {
   dayjs,
+  jwt,
   regex: {
     url: /\b(?:https?|ftp):\/\/[a-z0-9-+&@#/%?=~_|!:,.;]*[a-z0-9-+&@#/%=~_|]/gim,
     pseudoUrl: /(^|[^/])(www\.[\S]+(\b|$))/gim,

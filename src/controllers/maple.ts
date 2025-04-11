@@ -19,7 +19,7 @@ import {
   stat,
   symbolEquipment,
 } from '../services/maple/character'
-import { definedErrors } from '../assets/constants'
+import { useDefinedError } from '../assets/constants'
 import { union, unionRaider, unionArtifact, unionChampion } from '../services/maple/user'
 import { rankingOverall, rankingUnion } from '../services/maple/ranking'
 import { getOCID } from '../services/maple/__common'
@@ -110,7 +110,7 @@ const getInfo = async (
     return result
   } catch (e) {
     reply.status(400)
-    if (store.state.isMaintaining) return definedErrors.find(err => err.message === 'SERVER_MAINTENANCE')
+    if (store.state.isMaintaining) return useDefinedError('0002')
 
     return e
   }
