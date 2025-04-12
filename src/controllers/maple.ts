@@ -24,10 +24,41 @@ import { union, unionRaider, unionArtifact, unionChampion } from '../services/ma
 import { rankingOverall, rankingUnion } from '../services/maple/ranking'
 import { getOCID } from '../services/maple/__common'
 import { log } from '../core/logger'
-import { saveSearchHistory } from '../core/database'
+import { getSearchHistories, saveSearchHistory } from '../core/database'
 import useCache from '../core/cache'
 import helpers from '../core/helpers'
 import store from '../store'
+
+// save search history if the last search was more than 12 hours ago
+const save = async ({
+  ocid,
+  character_name: characterName,
+  ip,
+  result,
+}: {
+  ocid: string
+  character_name: string
+  ip: string
+  result: any
+}) => {
+  try {
+    const records = await getSearchHistories({ ocid, limit: 1 })
+    const lastHistory = records[0]
+    if (lastHistory) {
+      const lastSearchTime = helpers.dayjs(lastHistory.created_at)
+      const now = helpers.dayjs()
+      const diff = now.diff(lastSearchTime, 'hour')
+      if (diff < 12) {
+        log.info(`mapleController.save: ${characterName} (${ocid}) already searched within 12 hours`)
+        return
+      }
+    }
+
+    saveSearchHistory({ ocid, character_name: characterName, ip, result })
+  } catch (e) {
+    log.error(`Failed to save search history: ${e}`)
+  }
+}
 
 const getInfo = async (
   req: FastifyRequest<{ Querystring: { character_name: string } }>,
@@ -101,7 +132,7 @@ const getInfo = async (
     cache.set(`maple_ocid:${characterName}`, result, 60)
     log.info(`mapleController.getInfo: cached ${characterName} (${ocid}) for 60 seconds`)
 
-    saveSearchHistory({
+    save({
       ocid,
       character_name: characterName,
       ip: helpers.realIP(req),
