@@ -77,10 +77,9 @@ export const saveSearchHistory = async ({
 
 export const getCharacter = async (ocid: string): Promise<Character | undefined> => {
   try {
-    const result = await db<Character>('characters')
+    return await db<Character>('characters')
       .where({ ocid })
       .first()
-    if (!result) return
   } catch (e) {
     return Promise.reject(e)
   }

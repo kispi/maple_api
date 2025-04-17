@@ -43,8 +43,9 @@ const save = async ({
   try {
     // skip if character.updated_at is within 12 hours
     const existing = await getCharacter(ocid)
-    if (existing?.updated_at && helpers.dayjs().diff(existing.updated_at, 'hour') < 12) {
-      log.info(`mapleController.save: ${ocid} already exists, skipping save`)
+    const diff = existing?.updated_at ? helpers.dayjs().diff(existing.updated_at, 'minute') : 0
+    if (existing?.updated_at && diff < 12 * 60) {
+      log.info(`mapleController.save: ${ocid} saved within ${diff} minutes, skipping save`)
       return
     }
 
