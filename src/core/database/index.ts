@@ -1,114 +1,89 @@
-/*
-최초 데이터베이스 & 테이블 생성 쿼리
-
-CREATE DATABASE IF NOT EXISTS `everymaple`
-  DEFAULT CHARACTER SET utf8mb4
-  COLLATE utf8mb4_unicode_ci;
-
-USE `everymaple`;
-
-CREATE TABLE IF NOT EXISTS `search_histories` (
-  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `ocid` VARCHAR(255) NOT NULL,
-  `character_name` VARCHAR(255) NOT NULL,
-  `raw_json` LONGTEXT NOT NULL,
-  `ip` VARCHAR(255) NOT NULL,
-  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  INDEX `idx_ocid` (`ocid`)
-) ENGINE=InnoDB
-  DEFAULT CHARSET=utf8mb4
-  COLLATE=utf8mb4_unicode_ci;
-
-*/
-
-import { deflateSync, inflateSync } from 'zlib'
-import { useDefinedError } from '../../assets/constants'
+import { CharacterBasic } from '../../types/basic'
+import { deflateSync } from 'zlib'
 import { log } from '../logger'
 import knex from 'knex'
 import store from '../../store'
 
-export type SearchHistory = {
+// 최신 캐릭터 정보
+export type Character = {
   id: number
   ocid: string
   character_name: string
+  character_level: number
+  character_image: string
+  character_class: string
+  world_name: string
+  created_at: string
+  updated_at: string
+  deleted_at?: string
+}
+
+export type SearchHistory = {
+  id: number
+  character?: Character
+  character_id: number
   raw_json: string
   ip: string
   created_at: string
 }
 
-// 그냥 JSON으로 저장하면 행 하나에 거의 500KiB라 도저히 감당이 안되는데 아래처럼 압축했더니 32KiB로 줄어들었음.
+// deflateSync를 하면 JSON 압축률이 매우 좋음
 export const saveSearchHistory = async ({
   ocid,
-  character_name,
   ip,
   result,
 }: {
-  ocid: string,
-  character_name: string,
-  ip: string,
-  result: any,
+  ocid: string
+  ip: string
+  result: { basic: CharacterBasic }
 }) => {
-  const raw_json = deflateSync(Buffer.from(JSON.stringify(result)), { level: 9 }).toString('base64')
   try {
+    const existing = await db<Character>('characters')
+      .where({ ocid })
+      .first()
+
+    const { character_name, character_level, character_image, character_class, world_name } = result.basic
+    if (existing) {
+      await db<Character>('characters')
+        .where({ ocid })
+        .update({ character_name, character_level, character_image, character_class, world_name })
+    } else {
+      await db<Character>('characters').insert({ ocid, character_name, character_level, character_image, character_class, world_name })
+    }
+
+    // 캐릭터 ID 가져오기
+    const character = await db<Character>('characters')
+      .where({ ocid })
+      .select('id')
+      .first()
+    if (!character) {
+      log.error(`Failed to find character_id for ocid: ${ocid}`)
+      return
+    }
+
+    // 검색 히스토리 저장
     await db<SearchHistory>('search_histories').insert({
-      ocid,
-      character_name,
+      character_id: character.id,
       ip,
-      raw_json,
+      raw_json: deflateSync(
+        Buffer.from(JSON.stringify(result)),
+        { level: 9 }
+      ).toString('base64'),
     })
   } catch (e) {
     log.error(`Failed to save search history: ${e}`)
   }
 }
 
-// 당연히 사용할 떄는 압축을 풀어야 함 (ex: getSearchHistories({ character_name: 'coinsect' }))
-export const getSearchHistories = async ({
-  id,
-  ocid,
-  character_name,
-  limit,
-  page,
-  orderBy = 'created_at',
-  order = 'desc',
-  raw,
-}: {
-  id?: number,
-  ocid?: string,
-  character_name?: string,
-  limit?: number,
-  page?: number,
-  orderBy?: 'created_at' | 'id',
-  order?: 'asc' | 'desc',
-  raw?: boolean,
-}) => {
-  const query = db<SearchHistory>('search_histories').select('*')
-
-  const defaults = {
-    limit: 10,
-    page: 1,
+export const getCharacter = async (ocid: string): Promise<Character | undefined> => {
+  try {
+    const result = await db<Character>('characters')
+      .where({ ocid })
+      .first()
+    if (!result) return
+  } catch (e) {
+    return Promise.reject(e)
   }
-
-  if (limit && (limit > store.state.serverConfig.MAX_SEARCH_HISTORY_LIMIT)) return Promise.reject(useDefinedError('0003'))
-
-  if (id) {
-    query.where('id', id)
-  } else if (ocid) {
-    query.where('ocid', ocid)
-  } else if (character_name) {
-    query.where('character_name', character_name)
-  }
-
-  const rows = await query
-    .orderBy(orderBy, order)
-    .limit(limit || defaults.limit)
-    .offset(((page || defaults.page) - 1) * (limit || defaults.limit))
-  return rows.map(({ raw_json, ...rest }) => ({
-    ...rest,
-    raw_json: raw ? raw_json : JSON.parse(
-      inflateSync(Buffer.from(raw_json, 'base64')).toString()
-    ),
-  }))
 }
 
 export let db: knex.Knex<any, unknown[]>

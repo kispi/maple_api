@@ -1,3 +1,4 @@
+import { CharacterBasic } from '../types/basic'
 import { FastifyReply, FastifyRequest } from 'fastify'
 import {
   androidEquipment,
@@ -24,7 +25,7 @@ import { union, unionRaider, unionArtifact, unionChampion } from '../services/ma
 import { rankingOverall, rankingUnion } from '../services/maple/ranking'
 import { getOCID } from '../services/maple/__common'
 import { log } from '../core/logger'
-import { getSearchHistories, saveSearchHistory } from '../core/database'
+import { getCharacter, saveSearchHistory } from '../core/database'
 import useCache from '../core/cache'
 import helpers from '../core/helpers'
 import store from '../store'
@@ -32,29 +33,22 @@ import store from '../store'
 // save search history if the last search was more than 12 hours ago
 const save = async ({
   ocid,
-  character_name: characterName,
   ip,
   result,
 }: {
   ocid: string
-  character_name: string
   ip: string
-  result: any
+  result: any,
 }) => {
   try {
-    const records = await getSearchHistories({ ocid, limit: 1 })
-    const lastHistory = records[0]
-    if (lastHistory) {
-      const lastSearchTime = helpers.dayjs(lastHistory.created_at)
-      const now = helpers.dayjs()
-      const diff = now.diff(lastSearchTime, 'hour')
-      if (diff < 12) {
-        log.info(`mapleController.save: ${characterName} (${ocid}) already searched within 12 hours`)
-        return
-      }
+    // skip if character.updated_at is within 12 hours
+    const existing = await getCharacter(ocid)
+    if (existing?.updated_at && helpers.dayjs().diff(existing.updated_at, 'hour') < 12) {
+      log.info(`mapleController.save: ${ocid} already exists, skipping save`)
+      return
     }
 
-    saveSearchHistory({ ocid, character_name: characterName, ip, result })
+    saveSearchHistory({ ocid, ip, result })
   } catch (e) {
     log.error(`Failed to save search history: ${e}`)
   }
@@ -132,12 +126,7 @@ const getInfo = async (
     cache.set(`maple_ocid:${characterName}`, result, 60)
     log.info(`mapleController.getInfo: cached ${characterName} (${ocid}) for 60 seconds`)
 
-    save({
-      ocid,
-      character_name: characterName,
-      ip: helpers.realIP(req),
-      result,
-    })
+    save({ ocid, ip: helpers.realIP(req), result })
     return result
   } catch (e) {
     reply.status(400)
