@@ -11,7 +11,7 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # Load nvm bash_completion
 
 # If using zsh, you can also source .zshrc but NVM is usually the key
-# source ~/.zshrc
+source ~/.zshrc
 
 echo "🚀 Starting deployment..."
 cd $PROJECT_DIR

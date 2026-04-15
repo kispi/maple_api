@@ -19,4 +19,4 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script: |
-            bash -l ~/web/maple_api/deploy.sh
+            zsh -l -c "cd ~/web/maple_api && ./deploy.sh"
