@@ -97,15 +97,15 @@ const getInfo = async (
     const ocid = await getOCID(characterName)
     const entries = await Promise.all(Object.entries(foos).map(async ([key, foo]) => [key, await foo({ ocid })]))
     const result = Object.fromEntries(entries)
-    
+
     // 스킬은 호출 오버로드가 달라서 따로 처리
     const skillsResp = await Promise.all([
-      skill({ ocid, character_skill_grade: '0'}),
-      skill({ ocid, character_skill_grade: '6'}),
+      skill({ ocid, character_skill_grade: '0' }),
+      skill({ ocid, character_skill_grade: '6' }),
     ])
     result.skills = [skillsResp[0], skillsResp[1]]
 
-    const date = helpers.dayjs().format('YYYY-MM-DD')
+    const date = helpers.dayjs().add(-1, 'day').format('YYYY-MM-DD')
     const rankingResp = await Promise.all([
       rankingOverall({ ocid, date }),
       rankingOverall({ ocid, date, world_name: result.basic.world_name }),
