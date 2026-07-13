@@ -18,5 +18,27 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
+          script_stop: true
           script: |
-            zsh -l -c "cd ~/web/maple_api && ./deploy.sh"
+            set -e
+
+            # Non-interactive shells don't source the profile, so nvm/pm2 aren't on PATH yet
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+            cd ~/web/maple_api
+
+            echo "📥 Pulling latest changes from main..."
+            git fetch origin main
+            git reset --hard origin/main
+
+            echo "📦 Installing dependencies..."
+            npm install
+
+            echo "🏗️ Building project..."
+            npm run build
+
+            echo "🔄 Restarting application with PM2..."
+            pm2 restart maple_api || pm2 start npm --name "maple_api" -- run start
+
+            echo "✅ Deployment finished successfully!"
